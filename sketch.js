@@ -44,6 +44,10 @@ function draw() {
   food.show();
 }
 
+function keyPressed() {
+  snake.handle_keypress(keyCode);
+}
+
 function update() {
     try {
         snake.update(food.body);

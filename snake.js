@@ -1,6 +1,6 @@
 class Snake {
     body = []; // body's X-Y positions throughout its movement
-    move_dir = createVector(0,0); // movement speed in x and y directions
+    move_dir = createVector(0,0); // movement speed in x(-1=>left,+1=>right) and y(-1=>up,+1=>down) directions
     movement_speed = 1; // movement speed
     border_limit = 0; // border of this snake game
     color = 'green'; // snake's color
@@ -24,6 +24,32 @@ class Snake {
         console.log('body is at: ', this.body[0])
         console.log('head is at:',this.get_head())
         
+    }
+
+    handle_keypress(keyCode) {
+        if (this.pathfinding_choice != this.pathfinding_options[0]) {
+            // other pathfinding choices do not require any further user input, exit w/o doing anything
+            return;
+        }
+        // TODO: Handle WASD and IJKL letter keys as well for arrows for those who use that
+        switch (keyCode) {
+            case UP_ARROW:
+                this.move_dir.x = 0;
+                this.move_dir.y = -1;
+                break;
+            case DOWN_ARROW:
+                this.move_dir.x = 0;
+                this.move_dir.y = 1;
+                break;
+            case LEFT_ARROW:
+                this.move_dir.x = -1;
+                this.move_dir.y = 0;
+                break;
+            case RIGHT_ARROW:
+                this.move_dir.x = 1;
+                this.move_dir.y = 0;
+                break;
+        }
     }
   
     
@@ -64,6 +90,7 @@ class Snake {
         // Act based on the chosen pathfinding algorithm
         switch(this.pathfinding_choice) {
             case this.pathfinding_options[0]: //'human-path-finding'
+                // do nothing, let the user control the snake and handle any keypresses
                 break;
             case this.pathfinding_options[1]: //'depth-first-search'
                 break;
