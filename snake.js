@@ -31,23 +31,43 @@ class Snake {
             // other pathfinding choices do not require any further user input, exit w/o doing anything
             return;
         }
-        // TODO: Handle WASD and IJKL letter keys as well for arrows for those who use that
+        // This function handles the following kinds of arrow commands:
+        // 1. Traditional Arrow keys (UP, LEFT, DOWN, RIGHT)
+        // 2. WASD letter keys
+        // 3. IJKL letter keys
         switch (keyCode) {
             case UP_ARROW:
+            case 87: // W
+            case 73: // I
                 this.move_dir.x = 0;
                 this.move_dir.y = -1;
                 break;
             case DOWN_ARROW:
+            case 83: // S
+            case 75: // K
                 this.move_dir.x = 0;
                 this.move_dir.y = 1;
                 break;
             case LEFT_ARROW:
+            case 65: // A
+            case 74: // J
                 this.move_dir.x = -1;
                 this.move_dir.y = 0;
                 break;
             case RIGHT_ARROW:
+            case 68: // D
+            case 76: // L
                 this.move_dir.x = 1;
                 this.move_dir.y = 0;
+                break;
+            case 27: // ESC
+                // stop the snake
+                this.move_dir.x = 0;
+                this.move_dir.y = 0;
+                // grow the snake
+                console.log('hit esc key! Trying to grow')
+                this.#eat(this.get_head())
+                console.log('done w/esc key')
                 break;
         }
     }
@@ -104,7 +124,7 @@ class Snake {
                 break;
         }
     }
-  
+    
     #move() {
         // In this function, we will move the snake "forward" based on the move_dir we've decided on
         //
@@ -112,56 +132,68 @@ class Snake {
         // - 0th position => the oldest position (i.e. TAIL)
         // - Nth position => the newest position (i.e. HEAD)
         if (this.first_time) {
-            console.log('before:');
-            this.body.forEach((item, index) => {console.log(`${index} : ${item}`)})
+            //console.log('before:');
+            //this.body.forEach((item, index) => {console.log(`${index} : ${item}`)})
         }
-        let new_head = this.get_head()
+        //let new_head = this.get_head()
+        let new_head = this.body[this.body.length - 1].copy();
         if (this.first_time) {
-            console.log('returned get_head() is:', new_head)
+            //console.log('returned get_head() is:', new_head)
         }
         new_head.x += this.move_dir.x; // move in the X direction by this much
         new_head.y += this.move_dir.y; // move in the Y direction by this much
         if (this.first_time) {
-            console.log('move_dir is:', this.move_dir)
-            console.log('added to new_head, is now:', new_head)
+            //console.log('move_dir is:', this.move_dir)
+            //console.log('added to new_head, is now:', new_head)
         }
   
         // TODO: Check if this new_head is going to move the snake beyond the border
         // If so, then raise an exception. The World object will handle it
-        if (new_head.x > this.border_limit || new_head.y > this.border_limit || new_head.x < 0 || new_head.y < 0) {
+        if (new_head.x > (this.border_limit+1) || new_head.y > (this.border_limit+1) || new_head.x < 0 || new_head.y < 0) {
             // RAISE AN ERROR
             throw new Error("OutOfBounds: Snake is out of bounds of game")
         }
         if (this.first_time) {
-            console.log('1.newHead is:',new_head)
+            //console.log('1.newHead is:',new_head)
         }
         
         
         // delete the oldest position
+        if (this.first_time) {
+            //console.log('before shift', this.body)
+        }
         this.body.shift()
+        if (this.first_time) {
+            //console.log('after shift', this.body)
+        }
         // push the newest position to the end of this array
         this.body.push(new_head)
         if (this.first_time) {
-            console.log('after:');
-            this.body.forEach((item, index) => {console.log(`${index} : ${item}`)}) 
-            console.log('2.newHead is:',new_head)
+            //console.log('after push()', this.body)
+        }
+        if (this.first_time) {
+            //console.log('after:');
+            //this.body.forEach((item, index) => {console.log(`${index} : ${item}`)}) 
+            //console.log('2.newHead is:',new_head)
         }
     }
-  
+    
     #eat(food_body) {
-  
-        // basically the moment when
-        if (this.body.includes(food_body)) {
-            this.body.push(this.get_head());
+        let head = this.get_head()
+        
+        // basically the moment when the snake's head reached the food
+        if (head.x == food_body.x && head.y == food_body.y) {
+            let head = this.body[this.body.length - 1].copy();
+            this.body.push(head);
         }
-    } 
+    }
   
     show() {
         // show the snake's body in this game
         if (this.first_time) {
-            console.log('showing this:');
-            this.body.forEach((item, index) => {console.log(`${index} : ${item}`)}) 
-            this.first_time = false;
+            //console.log('showing this:');
+            //this.body.forEach((item, index) => {console.log(`${index} : ${item}`)}) 
+            //this.first_time = false;
         }
         this.body.forEach((item, index) => {
             fill(this.color);
@@ -172,7 +204,7 @@ class Snake {
   
     get_head() {
         if (this.first_time) {
-        console.log('get_head() will return this:',this.body.slice(-1)[0])
+        //console.log('get_head() will return this:',this.body.slice(-1)[0])
     }
         return this.body.slice(-1)[0];
     }
